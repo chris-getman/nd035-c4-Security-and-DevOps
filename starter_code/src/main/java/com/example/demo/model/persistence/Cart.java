@@ -89,6 +89,7 @@ public class Cart {
 			items = new ArrayList<>();
 		}
 		items.remove(item);
+
 		if(total == null) {
 			total = new BigDecimal(0);
 		}
