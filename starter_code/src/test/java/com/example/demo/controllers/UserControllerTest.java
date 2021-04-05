@@ -83,7 +83,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void verify_notFoundForNonexistentUser() {
+    public void verify_notFoundForNonexistentUserId() {
         Long id = new Long(44);
         ResponseEntity<User> response = userController.findById(id);
         assertNotNull(response);
@@ -102,6 +102,14 @@ public class UserControllerTest {
         assertEquals(0, u.getId());
         assertEquals("test", u.getUsername());
         assertEquals("testPassword", u.getPassword());
+    }
+
+    @Test
+    public void verify_notFoundForNonexistantUsername() {
+        String username = "test";
+        ResponseEntity<User> response = userController.findByUserName(username);
+        assertNotNull(response);
+        assertEquals(404, response.getStatusCodeValue());
     }
 
     private CreateUserRequest createUserRequest() {
