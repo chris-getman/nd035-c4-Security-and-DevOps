@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
+import java.util.Optional;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
@@ -63,11 +65,58 @@ public class UserControllerTest {
         assertEquals(400, response.getStatusCodeValue());
     }
 
+    @Test
+    public void verify_findUserById() {
+        Long id = new Long(0);
+        User user = createUser();
+
+        when(userRepository.findById(id)).thenReturn(Optional.of(user));
+
+        ResponseEntity<User> response = userController.findById(id);
+
+        assertNotNull(response);
+        User u = response.getBody();
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(0, u.getId());
+        assertEquals("test", u.getUsername());
+        assertEquals("testPassword", u.getPassword());
+    }
+
+    @Test
+    public void verify_notFoundForNonexistentUser() {
+        Long id = new Long(44);
+        ResponseEntity<User> response = userController.findById(id);
+        assertNotNull(response);
+        assertEquals(404, response.getStatusCodeValue());
+    }
+
+    @Test
+    public void verify_findUserByUsername() {
+        User user = createUser();
+        when(userRepository.findByUsername("test")).thenReturn(user);
+        ResponseEntity<User> response = userController.findByUserName("test");
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCodeValue());
+
+        User u = response.getBody();
+        assertEquals(0, u.getId());
+        assertEquals("test", u.getUsername());
+        assertEquals("testPassword", u.getPassword());
+    }
+
     private CreateUserRequest createUserRequest() {
         CreateUserRequest r = new CreateUserRequest();
         r.setUsername("test");
         r.setPassword("testPassword");
         r.setConfirmPassword("testPassword");
         return r;
+    }
+
+    private User createUser() {
+        User user = new User();
+        user.setId(0);
+        user.setUsername("test");
+        user.setPassword("testPassword");
+        return user;
     }
 }
