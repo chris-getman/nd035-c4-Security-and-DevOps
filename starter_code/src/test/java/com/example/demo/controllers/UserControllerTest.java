@@ -38,10 +38,7 @@ public class UserControllerTest {
     @Test
     public void verify_createUserHappyPath() {
         when(encoder.encode("testPassword")).thenReturn("thisIsHashed");
-        CreateUserRequest r = new CreateUserRequest();
-        r.setUsername("test");
-        r.setPassword("testPassword");
-        r.setConfirmPassword("testPassword");
+        CreateUserRequest r = createUserRequest();
 
         final ResponseEntity<User> response = userController.createUser(r);
 
@@ -58,6 +55,19 @@ public class UserControllerTest {
 
     @Test
     public void verify_mismatchedConfirmPasswordDenied() {
+        CreateUserRequest r = createUserRequest();
+        r.setConfirmPassword("wrong");
+        final ResponseEntity<User> response = userController.createUser(r);
 
+        assertNotNull(response);
+        assertEquals(400, response.getStatusCodeValue());
+    }
+
+    private CreateUserRequest createUserRequest() {
+        CreateUserRequest r = new CreateUserRequest();
+        r.setUsername("test");
+        r.setPassword("testPassword");
+        r.setConfirmPassword("testPassword");
+        return r;
     }
 }
